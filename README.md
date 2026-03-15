@@ -26,7 +26,68 @@ This commands includes
 • Other IP Commands e.g. show ip route etc.
 <BR>
 
-## Output
+## program
 
+# server.py
+```
+import socket
+from pythonping import ping
+
+s = socket.socket()
+s.bind(('localhost', 8000))
+s.listen(5)
+print("Server listening on port 8000...")
+c, addr = s.accept()
+print(f"Connection from {addr}")
+
+while True:
+    try:
+        hostname = c.recv(1024).decode('utf-8')
+        if not hostname or hostname.lower() == 'exit':
+            print("Client disconnected.")
+            break
+        response = ping(hostname, verbose=False, count=4)
+        c.send(str(response).encode('utf-8'))
+    except Exception as e:
+        c.send(f"Ping failed: {e}".encode('utf-8'))
+
+c.close()
+```
+# client.py
+```
+import socket
+
+s = socket.socket()
+s.connect(('localhost', 8000))
+
+while True:
+    ip = input("Enter the website you want to ping (or type 'exit' to quit): ")
+    s.send(ip.encode('utf-8'))
+    if ip.lower() == 'exit':
+        break
+    print(s.recv(4096).decode('utf-8'))
+
+s.close()
+```
+## Output
+![alt text](<Screenshot 2026-03-13 184315.png>)
+![alt text](<Screenshot 2026-03-13 184329.png>)
+
+```
+traceroute
+```
+![alt text](<Screenshot 2026-03-15 211059.png>)
+```
+ipconfig
+```
+![alt text](<Screenshot 2026-03-15 211223.png>)
+```
+nslookup
+```
+![alt text](<Screenshot 2026-03-15 211249.png>)
+```
+netstat
+```
+![alt text](<Screenshot 2026-03-15 211402.png>)
 ## Result
 Thus Execution of Network commands Performed 
